@@ -1,0 +1,38 @@
+import { clients } from './db';
+import { Postgres } from './db/postgres';
+import { PrimaryKey, QueryPart, OnConflict } from './db/types';
+export declare class Model<T> {
+    static tableName: string;
+    static primaryKey: string;
+    static withTimestamps: boolean;
+    static db: Postgres;
+    attributes: T;
+    tableName: string;
+    primaryKey: keyof T;
+    constructor(attributes?: T);
+    static setDb(clientName?: keyof typeof clients): void;
+    static find<U extends QueryPart = any>(conditions?: Partial<U>, orderBy?: Partial<U>, extra?: string): Promise<U[]>;
+    static findOne<U = any, P extends QueryPart = any>(primaryKey: PrimaryKey, orderBy?: Partial<P>): Promise<U | undefined>;
+    static findOne<U extends QueryPart = any, P extends QueryPart = any>(conditions: Partial<U>, orderBy?: Partial<P>): Promise<U | undefined>;
+    static count<U extends QueryPart = any>(conditions: Partial<U>, extra?: string): Promise<number>;
+    static query<U = any>(queryString: any, values?: any[]): Promise<U[]>;
+    static create<U extends QueryPart = any>(row: U): Promise<U>;
+    static upsert<U extends QueryPart = any>(row: U, onConflict?: OnConflict<U>): Promise<U>;
+    static update<U extends QueryPart = any, P extends QueryPart = any>(changes: Partial<U>, conditions: Partial<P>): Promise<any>;
+    static delete<U extends QueryPart = any>(conditions: Partial<U>): Promise<any>;
+    protected static insert<U extends QueryPart = any>(row: U, onConflict?: OnConflict): Promise<U>;
+    getConstructor(): typeof Model;
+    getDefaultQuery(): Partial<T>;
+    retreive(conditions?: Partial<T>): Promise<T>;
+    create(): Promise<T>;
+    upsert<K extends keyof T>(onConflict?: OnConflict<T>): Promise<T>;
+    update(conditions?: Partial<T>): Promise<any>;
+    delete(conditions?: Partial<T>): Promise<any>;
+    isEmpty(): boolean;
+    get<K extends keyof T>(key: K): T[K];
+    getAll(): T;
+    getIn(keyPath: string[]): T | null;
+    set<K extends keyof T>(key: K, value: T[K]): Model<T>;
+    setIn(keyPath: string[], value: any): this | null;
+    assign(template: Partial<T>): Model<T>;
+}
